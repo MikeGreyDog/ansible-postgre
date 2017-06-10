@@ -4,6 +4,7 @@ Vagrant.configure("2") do |config|
         node00.vm.box = "centos/7"
         node00.vm.hostname = 'node00'
         node00.vm.network :private_network, ip: "192.168.33.100"
+        #node00.vm.provision "file", source: "~/.ssh/for-test.pub", destination: "~/.ssh/me.pub"
         node00.vm.provider "virtualbox" do |vb|
                 vb.memory = "1024"
                 vb.cpus = "1"
@@ -14,6 +15,7 @@ Vagrant.configure("2") do |config|
         node01.vm.box = "centos/7"
         node01.vm.hostname = 'node01'
         node01.vm.network :private_network, ip: "192.168.33.101"
+        #node01.vm.provision "file", source: "~/.ssh/for-test.pub", destination: "~/.ssh/me.pub"
         node01.vm.provider "virtualbox" do |vb|
                 vb.memory = "1024"
                 vb.cpus = "1"
@@ -24,6 +26,7 @@ Vagrant.configure("2") do |config|
         node10.vm.box = "centos/7"
         node10.vm.hostname = 'node10'
         node10.vm.network :private_network, ip: "192.168.33.110"
+        #node10.vm.provision "file", source: "~/.ssh/for-test.pub", destination: "~/.ssh/me.pub"
         node10.vm.provider "virtualbox" do |vb|
                 vb.memory = "1024"
                 vb.cpus = "1"
@@ -34,6 +37,7 @@ Vagrant.configure("2") do |config|
         node11.vm.box = "centos/7"
         node11.vm.hostname = 'node11'
         node11.vm.network :private_network, ip: "192.168.33.111"
+        #node11.vm.provision "file", source: "~/.ssh/for-test.pub", destination: "~/.ssh/me.pub"
         node11.vm.provider "virtualbox" do |vb|
                 vb.memory = "1024"
                 vb.cpus = "1"

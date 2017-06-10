@@ -1,0 +1,16 @@
+[node00]
+192.168.33.100
+
+[node01]
+192.168.33.101
+
+[node10]
+192.168.33.110
+
+[node11]
+192.168.33.111
+
+[all:vars]
+ansible_connection=ssh
+ansible_ssh_user=vagrant
+ansible_ssh_pass=vagrant
