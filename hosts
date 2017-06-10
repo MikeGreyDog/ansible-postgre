@@ -10,6 +10,9 @@
 [node11]
 192.168.33.111
 
+
+
+# I  know, but its only local env
 [all:vars]
 ansible_connection=ssh
 ansible_ssh_user=vagrant
