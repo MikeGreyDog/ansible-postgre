@@ -1,0 +1,96 @@
+---
+- hosts: node00
+  sudo: yes
+  tasks:
+
+  - name: PostgreSQL | Install PostgreSQL
+    yum:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - postgresql-server
+      - postgresql-contrib
+      - python-psycopg2
+
+  - name: Initiate database
+    command: service postgresql initdb
+            creates=/var/lib/pgsql/data/postgresql.conf
+
+  - name: Start PostgreSQL and enable at boot
+    service:
+        name: postgresql
+        enabled: yes
+        state: started
+
+  - name: Ensure PostgreSQL is listening on all localhost
+    lineinfile:
+        path: /var/lib/pgsql/data/postgresql.conf
+        regexp: '^#?listen_addresses\s*='
+        line: listen_addresses = '*'
+        state: present
+    notify:
+    - restart postgresql
+
+  - name: Insert md5 connection type
+    lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        line: 'host all all 127.0.0.1/32 trust'
+        insertbefore: BOF
+    notify: restart postgresql
+
+  # - name: Add  local connection in our network
+  #   lineinfile:
+  #       path: /var/lib/pgsql/data/pg_hba.conf
+  #       line: 'host all all 192.168.103.128/25 md5' # change user and db !!! and set 192.168.103.128/25
+  #       insertbefore: BOF
+  #   notify: restart postgresql
+
+  - name: Open port for postgres
+    firewalld:
+        port: 5432/tcp
+        permanent: true
+        state: enabled
+    notify: restart postgresql
+
+  - name: Create DB user
+    become_user: postgres
+    become: yes
+    postgresql_user:
+        name: omsuser
+        password: omspasswd
+        state: present
+        encrypted: no
+    notify: restart postgresql
+
+  - name: Create DB
+    become_user: postgres
+    become: yes
+    postgresql_db:
+        name: omsdb
+        owner: omsuser
+        encoding: 'UTF-8'
+        lc_collate: 'en_US.UTF-8'
+        lc_ctype: 'en_US.UTF-8'
+        template: 'template0'
+        state: present
+    notify: restart postgresql
+
+  - name: Set privileges for DB
+    become_user: postgres
+    become: yes
+    postgresql_privs:
+        db: omsdb
+        privs: ALL
+        type: database
+        role: omsuser
+    notify: restart postgresql
+
+  handlers:
+  - name: restart postgresql
+    service:
+        name: postgresql
+        state: restarted
+
+
+
+
