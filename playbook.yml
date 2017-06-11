@@ -1,5 +1,5 @@
 ---
-- hosts: node00
+- hosts: all
   sudo: yes
   tasks:
 
@@ -31,19 +31,15 @@
     notify:
     - restart postgresql
 
-  - name: Insert md5 connection type
+  - name: Insert md5 connection type and  add  local connection
     lineinfile:
         path: /var/lib/pgsql/data/pg_hba.conf
-        line: 'host all all 127.0.0.1/32 trust'
-        insertbefore: BOF
-    notify: restart postgresql
-
-  # - name: Add  local connection in our network
-  #   lineinfile:
-  #       path: /var/lib/pgsql/data/pg_hba.conf
-  #       line: 'host all all 192.168.103.128/25 md5' # change user and db !!! and set 192.168.103.128/25
-  #       insertbefore: BOF
-  #   notify: restart postgresql
+        line: 'host  all  all  127.0.0.1/32  trust'
+        line: 'host  all  all  0.0.0.0/0  md5' # chenge into production network
+        insertafter: EOF
+        state: present
+    notify:
+    - restart postgresql
 
   - name: Open port for postgres
     firewalld:
@@ -90,7 +86,3 @@
     service:
         name: postgresql
         state: restarted
-
-
-
-
