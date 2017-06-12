@@ -1,20 +1,20 @@
+
+
+[node00]
+192.168.33.100 ansible_ssh_private_key_file=.vagrant/machines/node00/virtualbox/private_key
+
+[node01]
+192.168.33.101 ansible_ssh_private_key_file=.vagrant/machines/node01/virtualbox/private_key
+
+[node10]
+192.168.33.110 ansible_ssh_private_key_file=.vagrant/machines/node10/virtualbox/private_key
+
+[node11]
+192.168.33.111 ansible_ssh_private_key_file=.vagrant/machines/node11/virtualbox/private_key
+
+
 # Yeap,i  know, but its only local env
 [all:vars]
 ansible_connection=ssh
 ansible_ssh_user=vagrant
-ansible_ssh_pass=vagrant
-
-[node00]
-192.168.33.100
-
-[node01]
-192.168.33.101
-
-[node10]
-192.168.33.110
-
-[node11]
-192.168.33.111
-
-
-
+#ansible_ssh_pass=vagrant
