@@ -1,6 +1,4 @@
 ---
-
-#sudo: yes
 - name: Add repository
   yum:
     state: present
@@ -41,7 +39,7 @@
 - name: Insert md5 connection type and  add  local connection
   lineinfile:
       path: /var/lib/pgsql/9.5/data/pg_hba.conf
-      line: 'host  all  all  127.0.0.1/32  trust'
+      #line: 'host  all  all  127.0.0.1/32  trust'
       line: 'host  all  all  0.0.0.0/0  md5' # chenge into production network
       insertafter: EOF
       state: present
