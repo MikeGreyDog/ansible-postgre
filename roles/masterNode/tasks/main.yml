@@ -1,0 +1,9 @@
+---
+- name: Insert md5 connection type and  add  local connection
+  lineinfile:
+      path: /var/lib/pgsql/9.5/data/pg_hba.conf
+      line: 'host  replication  postgres  0.0.0.0/0  md5'
+      insertafter: EOF
+      state: present
+  notify:
+  - restart postgresql-9.5

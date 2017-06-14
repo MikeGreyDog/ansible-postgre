@@ -1,7 +1,0 @@
----
-- hosts: dbservers
-  sudo: yes
-  tags: init_db
-  roles:
-    - common
-    #- replications

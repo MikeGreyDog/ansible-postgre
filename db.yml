@@ -1,2 +1,17 @@
 ---
-- include: dbservers.yml
+- hosts: dbservers
+  sudo: yes
+  tags: basic-install
+  roles:
+    - common
+  handlers:
+    - include: roles/common/handlers/main.yml
+    #- replications
+
+- hosts: masterNode
+  sudo: yes
+  tags: setup-master
+  roles:
+    - masterNode
+  handlers:
+  - include: roles/masterNode/handlers/main.yml
