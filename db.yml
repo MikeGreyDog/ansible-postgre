@@ -5,8 +5,8 @@
   roles:
     - common
   handlers:
-    - include: roles/common/handlers/main.yml
-    #- replications
+    - include: roles/handlers/main.yml
+
 
 - hosts: masterNode
   sudo: yes
@@ -14,4 +14,4 @@
   roles:
     - masterNode
   handlers:
-  - include: roles/masterNode/handlers/main.yml
+  - include: roles/handlers/main.yml

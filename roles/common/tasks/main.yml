@@ -15,6 +15,7 @@
     - postgresql95-devel
     - postgresql95-contrib
     - python-psycopg2
+    - https://yum.postgresql.org/9.5/redhat/rhel-7.2-x86_64/repmgr95-3.3.1-1.rhel7.x86_64.rpm
 
 - name: Initiate database
   command: /usr/pgsql-9.5/bin/postgresql95-setup initdb
@@ -23,28 +24,28 @@
 
 - name: Start PostgreSQL and enable at boot
   service:
-      name: postgresql-9.5
-      enabled: yes
-      state: started
+    name: postgresql-9.5
+    enabled: yes
+    state: started
 
 - name: Ensure PostgreSQL is listening on all localhost
   lineinfile:
-      path: /var/lib/pgsql/9.5/data/postgresql.conf
-      regexp: '^#?listen_addresses\s*='
-      line: listen_addresses = '*'
-      state: present
-  notify:
-  - restart postgresql-9.5
+    path: /var/lib/pgsql/9.5/data/postgresql.conf
+    regexp: '^#?listen_addresses\s*='
+    line: listen_addresses = '*'
+    state: present
+  # notify:
+  # - restart postgresql-9.5
 
-- name: Insert md5 connection type and  add  local connection
-  lineinfile:
-      path: /var/lib/pgsql/9.5/data/pg_hba.conf
-      #line: 'host  all  all  127.0.0.1/32  trust'
-      line: 'host  all  all  0.0.0.0/0  md5' # chenge into production network
-      insertafter: EOF
-      state: present
-  notify:
-  - restart postgresql-9.5
+- name: Create pg_hba.conf
+  template:
+    src: roles/common/templates/pg_hba.conf.j2
+    dest: /var/lib/pgsql/9.5/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+    #state: present
+  notify: restart postgresql-9.5
+
 
 - name: Open port for postgres
   firewalld:

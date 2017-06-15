@@ -1,5 +1,6 @@
 Vagrant.configure("2") do |config|
 
+
     config.vm.define "node00" do |node00|
         node00.vm.box = "centos/7"
         node00.vm.hostname = 'node00'
@@ -8,7 +9,7 @@ Vagrant.configure("2") do |config|
                 vb.memory = "1024"
                 vb.cpus = "1"
         end
-      end
+    end
 
     config.vm.define "node01" do |node01|
         node01.vm.box = "centos/7"
