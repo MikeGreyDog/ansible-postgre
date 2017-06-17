@@ -10,8 +10,24 @@
 
 - hosts: masterNode
   sudo: yes
-  tags: setup-master
+  tags: masterNode
   roles:
     - masterNode
   handlers:
-  - include: roles/handlers/main.yml
+    - include: roles/handlers/main.yml
+
+
+- hosts: slaveNode
+  sudo: yes
+  tags: slaveNode
+  roles:
+    - slaveNode
+  handlers:
+    - include: roles/handlers/main.yml
+
+
+- hosts: pgpoolm
+  sudo: yes
+  tags: pgpool-test
+  roles:
+    - pgpoolm

@@ -21,24 +21,24 @@ Vagrant.configure("2") do |config|
         end
     end
 
-    config.vm.define "node10" do |node10|
-        node10.vm.box = "centos/7"
-        node10.vm.hostname = 'node10'
-        node10.vm.network :private_network, ip: "192.168.33.110"
-        node10.vm.provider "virtualbox" do |vb|
+    config.vm.define "pgpool00" do |pgpool00|
+        pgpool00.vm.box = "centos/7"
+        pgpool00.vm.hostname = 'pgpool00'
+        pgpool00.vm.network :private_network, ip: "192.168.33.120"
+        pgpool00.vm.provider "virtualbox" do |vb|
                 vb.memory = "1024"
                 vb.cpus = "1"
         end
     end
 
-    config.vm.define "node11" do |node11|
-        node11.vm.box = "centos/7"
-        node11.vm.hostname = 'node11'
-        node11.vm.network :private_network, ip: "192.168.33.111"
-        node11.vm.provider "virtualbox" do |vb|
-                vb.memory = "1024"
-                vb.cpus = "1"
-        end
-    end
+    # config.vm.define "pgpool01s" do |pgpool01s|
+    #     pgpool01s.vm.box = "centos/7"
+    #     pgpool01s.vm.hostname = 'pgpool01s'
+    #     pgpool01s.vm.network :private_network, ip: "192.168.33.121"
+    #     pgpool01s.vm.provider "virtualbox" do |vb|
+    #             vb.memory = "1024"
+    #             vb.cpus = "1"
+    #     end
+    # end
 
 end

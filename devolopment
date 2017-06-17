@@ -5,13 +5,16 @@ ansible_connection=ssh
 ansible_ssh_user=vagrant
 ansible_ssh_pass=vagrant
 
-
 #main options
 [dbservers]
-192.168.33.100
-192.168.33.101
-192.168.33.110
-192.168.33.111
+192.168.33.100 # master
+192.168.33.101 # slave
 
 [masterNode]
 192.168.33.100
+
+[slaveNode]
+192.168.33.101
+
+[pgpoolm]
+192.168.33.120

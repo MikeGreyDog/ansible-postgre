@@ -1,19 +1,18 @@
 ---
-- name: Allow user repuser r/w replication db
-  lineinfile:
-    path: /var/lib/pgsql/9.5/data/pg_hba.conf
-    line: "{{ item }}"
-    insertafter: EOF
-    state: present
-  with_items:
-    - host    repmgr          repmgr      0.0.0.0/0           trust
-    - host    replication     repmgr      0.0.0.0/0           trust
-    - host    all             pgpool      0.0.0.0/0           trust
-    - host    all             all         0.0.0.0/0           md5
-  notify:
-  - restart postgresql-9.5
+- name: Initiate database ---  MASTER DB
+  command: /usr/pgsql-9.5/bin/postgresql95-setup initdb
+  args:
+      creates: /var/lib/pgsql/9.5/data/postgresql.conf
 
-- name: Allow user repuser r/w replication db
+- name: Ensure PostgreSQL is listening on all localhost ---  MASTER DB
+  lineinfile:
+    path: /var/lib/pgsql/9.5/data/postgresql.conf
+    regexp: '^#?listen_addresses\s*='
+    line: listen_addresses = '*'
+    state: present
+
+
+- name: Insert data into  postgresql.conf needs for repmgr ---  MASTER DB
   lineinfile:
     insertafter: EOF
     state: present
@@ -25,10 +24,35 @@
     - hot_standby = on
     - archive_mode = on
     - archive_command = '/bin/true'
-  notify:
-  - restart postgresql-9.5
 
-- name: Create DB replication user
+- name: Insert dat into pg_hba.conf ---  COMMON
+  template:
+    src: roles/masterNode/templates/pg_hba.conf.j2
+    dest: /var/lib/pgsql/9.5/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+    #state: present
+  notify: restart postgresql-9.5
+
+- name: Allow user repuser r/w replication db ---  MASTER DB
+  lineinfile:
+    path: /var/lib/pgsql/9.5/data/pg_hba.conf
+    line: "{{ item }}"
+    insertafter: EOF
+    state: present
+  with_items:
+    - host    repmgr          repmgr      0.0.0.0/0           trust
+    - host    replication     repmgr      0.0.0.0/0           trust
+    - host    all             pgpool      0.0.0.0/0           trust
+    - host    all             all         0.0.0.0/0           md5
+
+- name: Start PostgreSQL and enable at boot ---  MASTER DB
+  service:
+    name: postgresql-9.5
+    enabled: yes
+    state: started
+
+- name: Create DB replication user ---  MASTER DB
   become_user: postgres
   become: yes
   postgresql_user:
@@ -39,7 +63,7 @@
     state: present
   notify: restart postgresql-9.5
 
-- name: Create DB for replication
+- name: Create DB for replication ---  MASTER DB
   become_user: postgres
   become: yes
   postgresql_db:
@@ -52,41 +76,24 @@
     state: present
   notify: restart postgresql-9.5
 
-# - name: Set privileges for DB
-#   become_user: postgres
-#   become: yes
-#   postgresql_privs:
-#     db: repmgr
-#     privs: ALL
-#     type: database
-#     role: repmgr
-#     state: present
-#   notify: restart postgresql-9.5
-
-- name: Create repmgr path to config
-  file:
-    path: /var/lib/pgsql/repmgr/
-    state: directory
-    owner: postgres
-    group: postgres
-    #state: present
-  notify: restart postgresql-9.5
-
-- name: Create repmgr config
+- name: Create repmgr config ---  MASTER DB
   template:
     src: roles/masterNode/templates/repmgr.conf.j2
     dest: /var/lib/pgsql/repmgr/repmgr.conf
     owner: postgres
     group: postgres
 
-- name: restart postgresql-9.5
+- name: Restart postgresql-9.5 ---  MASTER DB
   service:
       name: postgresql-9.5
       state: restarted
 
-- name: Checkin node as master server
+- debug: var=vagrant.stdout_lines
+- name: Checkin node as master server ---  MASTER DB
   become_user: postgres
   become: yes
-  command: /usr/pgsql-9.5/bin/repmgr -f repmgr.conf master register
+  command: /usr/pgsql-9.5/bin/repmgr -f repmgr.conf master register -F
   args:
     chdir: /var/lib/pgsql/repmgr/
+  ignore_errors: yes
+

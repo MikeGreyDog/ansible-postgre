@@ -1,0 +1,23 @@
+/usr/pgsql-9.5/bin/repmgr -D /var/lib/pgsql/9.5/data -d repmgr -p 5432 -U repmgr -R postgres standby clone node00
+
+
+
+
+
+
+
+
+
+
+
+
+/usr/pgsql-9.5/bin/repmgr -h 192.168.33.100 -U repmgr -d repmgr -D /var/lib/pgsql/9.5/data -f /usr/pgsql-9.5/bin/repmgr/repmgr.conf standby clone
+
+
+
+
+repmgr -h 192.168.33.100 -U repmgr -d repmgr -D /var/lib/pgsql/9.5/data/ -f /var/lib/pgsql/repmgr/repmgr.conf standby clone
+
+
+
+/usr/pgsql-9.5/bin/repmgr -h 192.168.33.100 -U repmgr -d repmgr -D /var/lib/pgsql/9.5/data/ -f /var/lib/pgsql/repmgr/repmgr.conf standby clone -F
