@@ -1,20 +1,28 @@
----
-- name: PostgreSQL | Install PostgreSQL  ---  PGPOOL-MASTER
-  yum:
-    name: "{{ item }}"
-    state: present
+- name: copy shh keys 
+  copy:
+    src: /tmp/{{ item }}
+    dest: /tmp/
+    owner: root
+    group: root
+    mode: 0644
   with_items:
-    - nano
-    - http://www.pgpool.net/yum/rpms/3.5/redhat/rhel-7-x86_64/pgpool-II-pg95-3.5.8-1pgdg.rhel7.x86_64.rpm
-    - http://www.pgpool.net/yum/rpms/3.5/redhat/rhel-7-x86_64/pgpool-II-pg95-debuginfo-3.5.8-1pgdg.rhel7.x86_64.rpm
-    - http://www.pgpool.net/yum/rpms/3.5/redhat/rhel-7-x86_64/pgpool-II-pg95-extensions-3.5.8-1pgdg.rhel7.x86_64.rpm
-    #- pgpool-II-pg96
-    #- pgpool-II-pg96-debuginfo
-    #- pgpool-II-pg96-devel
-    # pgpool-II-pg96-extensions
+    - "id_rsa_pgsql_192.168.33.101"
+    - "id_rsa_root_192.168.33.101"
+    - "id_rsa_pgsql_192.168.33.100"
+    - "id_rsa_root_192.168.33.100"    
 
-- name: Open port for postgres---  PGPOOL-MASTER
-  firewalld:
-      port: 5432/tcp
-      permanent: true
-      state: enabled
+- name: add key for root
+  shell: cat /tmp/{{ item }} >> /root/.ssh/authorized_keys 
+  with_items:
+    - "id_rsa_pgsql_192.168.33.101"
+    - "id_rsa_root_192.168.33.101"
+    - "id_rsa_pgsql_192.168.33.100"
+    - "id_rsa_root_192.168.33.100" 
+
+- name: add key for root
+  shell: cat /tmp/{{ item }} >> /var/lib/pgsql/.ssh/authorized_keys 
+  with_items:
+    - "id_rsa_pgsql_192.168.33.101"
+    - "id_rsa_root_192.168.33.101"
+    - "id_rsa_pgsql_192.168.33.100"
+    - "id_rsa_root_192.168.33.100"

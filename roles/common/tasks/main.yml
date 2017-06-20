@@ -1,32 +1,30 @@
----
-- name: Add repository ---  COMMON
-  yum:
-    state: present
-    pkg: https://yum.postgresql.org/9.5/redhat/rhel-7.2-x86_64/pgdg-centos95-9.5-2.noarch.rpm
-
-- name: PostgreSQL | Install PostgreSQL  ---  COMMON
-  yum:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - postgresql95-server
-    - postgresql95
-    - postgresql95-libs
-    - postgresql95-devel
-    - postgresql95-contrib
-    - python-psycopg2
-    - https://yum.postgresql.org/9.5/redhat/rhel-7.2-x86_64/repmgr95-3.3.1-1.rhel7.x86_64.rpm
-
-- name: Create repmgr path to config ---  COMMON
-  file:
-    path: /var/lib/pgsql/repmgr/
+- name: Homefolder for psql user
+  file: 
+    path: /var/lib/pgsql
     state: directory
-    owner: postgres
+	   
+- name: group	
+  group:
+    name: postgres
+    state: present
+		       
+- name: Create user
+  user:
+    name: pgsql
+    uid: 26
     group: postgres
-  notify: restart postgresql-9.5
+    home: /var/lib/pgsql
+    generate_ssh_key: yes
 
-- name: Open port for postgres ---  COMMON
-  firewalld:
-      port: 5432/tcp
-      permanent: true
-      state: enabled
+- name: copy public key pgsql
+  fetch:
+    src: /var/lib/pgsql/.ssh/id_rsa.pub
+    dest: /c/tmp/id_rsa_pgsql_{{ inventory_hostname }}
+
+- name: generate keypair for root
+  command: ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ''
+
+- name: copy public key root
+  fetch:
+    src: /root/.ssh/id_rsa.pub
+    dest: /c/tmp/id_rsa_root_{{ inventory_hostname }}

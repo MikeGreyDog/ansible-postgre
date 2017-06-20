@@ -1,0 +1,20 @@
+---
+- name: PostgreSQL | Install PostgreSQL  ---  PGPOOL-MASTER
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - nano
+    - http://www.pgpool.net/yum/rpms/3.5/redhat/rhel-7-x86_64/pgpool-II-pg95-3.5.8-1pgdg.rhel7.x86_64.rpm
+    - http://www.pgpool.net/yum/rpms/3.5/redhat/rhel-7-x86_64/pgpool-II-pg95-debuginfo-3.5.8-1pgdg.rhel7.x86_64.rpm
+    - http://www.pgpool.net/yum/rpms/3.5/redhat/rhel-7-x86_64/pgpool-II-pg95-extensions-3.5.8-1pgdg.rhel7.x86_64.rpm
+    #- pgpool-II-pg96
+    #- pgpool-II-pg96-debuginfo
+    #- pgpool-II-pg96-devel
+    # pgpool-II-pg96-extensions
+
+- name: Open port for postgres---  PGPOOL-MASTER
+  firewalld:
+      port: 5432/tcp
+      permanent: true
+      state: enabled

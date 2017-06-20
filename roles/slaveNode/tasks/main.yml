@@ -1,31 +1,28 @@
+- name: copy shh keys
+  copy:
+    src: /tmp/{{ item }}
+    dest: /tmp/
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - "id_rsa_pgsql_192.168.33.100"
+    - "id_rsa_root_192.168.33.100"
+    - "id_rsa_pgsql_192.168.33.120"
+    - "id_rsa_root_192.168.33.120"
 
-- name: Create repmgr config ---  SLAVE DB
-  template:
-    src: roles/slaveNode/templates/repmgr.conf.j2
-    dest: /var/lib/pgsql/repmgr/repmgr.conf
-    owner: postgres
-    group: postgres
+- name: add key for root
+  shell: cat /tmp/{{ item }} >> /root/.ssh/authorized_keys
+  with_items:
+    - "id_rsa_pgsql_192.168.33.100"
+    - "id_rsa_root_192.168.33.100"
+    - "id_rsa_pgsql_192.168.33.120"
+    - "id_rsa_root_192.168.33.120"
 
-- name: Copy existing data on the master ---  SLAVE DB
-  become_user: postgres
-  become: yes
-  command: /usr/pgsql-9.5/bin/repmgr -h 192.168.33.100 -U repmgr -d repmgr -D /var/lib/pgsql/9.5/data/ -f /var/lib/pgsql/repmgr/repmgr.conf standby clone -F
-  ignore_errors: yes
-  notify: restart postgresql-9.5
-  args:
-    creates: /var/lib/pgsql/9.5/data/postgresql.conf
-
-- name: Start PostgreSQL and enable at boot ---  SLAVE DB
-  service:
-    name: postgresql-9.5
-    enabled: yes
-    state: started
-
-- name: Checkin node slave ---  SLAVE DB
-  become_user: postgres
-  become: yes
-  command: /usr/pgsql-9.5/bin/repmgr -f /var/lib/pgsql/repmgr/repmgr.conf standby register
-  args:
-    chdir: /var/lib/pgsql/repmgr/
-  ignore_errors: yes
-
+- name: add key for root
+  shell: cat /tmp/{{ item }} >> /var/lib/pgsql/.ssh/authorized_keys
+  with_items:
+    - "id_rsa_pgsql_192.168.33.100"
+    - "id_rsa_root_192.168.33.100"
+    - "id_rsa_pgsql_192.168.33.120"
+    - "id_rsa_root_192.168.33.120"
