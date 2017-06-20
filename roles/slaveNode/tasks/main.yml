@@ -1,6 +1,3 @@
-- name: clean
-  shell: rm -rf /tmp/id_rsa*
-
 - name: copy shh keys 
   copy:
     src: /tmp/{{ item }}
@@ -9,26 +6,26 @@
     group: root
     mode: 0644
   with_items:
-    - "id_rsa_pgsql_192.168.33.100"
-    - "id_rsa_root_192.168.33.100"
-    - "id_rsa_pgsql_192.168.33.120"
-    - "id_rsa_root_192.168.33.120" 
+    - "id_rsa_pgsql_{{ groups['masterNode'][0] }}"
+    - "id_rsa_root_{{ groups['masterNode'][0] }}"
+    - "id_rsa_pgsql_{{ groups['pgpoolm'][0] }}"
+    - "id_rsa_root_{{ groups['pgpoolm'][0] }}"
   register: newkeys   
 
 - name: add key for root
   shell: cat $(ls /tmp/{{ item }}) >> /root/.ssh/authorized_keys 
   with_items:
-    - "id_rsa_pgsql_192.168.33.100"
-    - "id_rsa_root_192.168.33.100"
-    - "id_rsa_pgsql_192.168.33.120"
-    - "id_rsa_root_192.168.33.120" 
+    - "id_rsa_pgsql_{{ groups['masterNode'][0] }}"
+    - "id_rsa_root_{{ groups['masterNode'][0] }}"
+    - "id_rsa_pgsql_{{ groups['pgpoolm'][0] }}"
+    - "id_rsa_root_{{ groups['pgpoolm'][0] }}"
   when: newkeys.changed
 
-- name: add key for root
+- name: add key for pgsql user
   shell: cat $(ls /tmp/{{ item }}) >> /var/lib/pgsql/.ssh/authorized_keys 
   with_items:
-    - "id_rsa_pgsql_192.168.33.100"
-    - "id_rsa_root_192.168.33.100"
-    - "id_rsa_pgsql_192.168.33.120"
-    - "id_rsa_root_192.168.33.120" 
+    - "id_rsa_pgsql_{{ groups['masterNode'][0] }}"
+    - "id_rsa_root_{{ groups['masterNode'][0] }}"
+    - "id_rsa_pgsql_{{ groups['pgpoolm'][0] }}"
+    - "id_rsa_root_{{ groups['pgpoolm'][0] }}"
   when: newkeys.changed
