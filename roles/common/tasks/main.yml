@@ -2,12 +2,12 @@
   file: 
     path: /var/lib/pgsql
     state: directory
-	   
+
 - name: group	
   group:
     name: postgres
     state: present
-		       
+     
 - name: Create user
   user:
     name: pgsql
@@ -15,16 +15,20 @@
     group: postgres
     home: /var/lib/pgsql
     generate_ssh_key: yes
+  register: newuser
 
 - name: copy public key pgsql
   fetch:
     src: /var/lib/pgsql/.ssh/id_rsa.pub
-    dest: /c/tmp/id_rsa_pgsql_{{ inventory_hostname }}
+    dest: /tmp/id_rsa_pgsql_{{ inventory_hostname }}
+    flat: yes
 
 - name: generate keypair for root
   command: ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ''
+  when: newuser.changed
 
 - name: copy public key root
   fetch:
     src: /root/.ssh/id_rsa.pub
-    dest: /c/tmp/id_rsa_root_{{ inventory_hostname }}
+    dest: /tmp/id_rsa_root_{{ inventory_hostname }}
+    flat: yes

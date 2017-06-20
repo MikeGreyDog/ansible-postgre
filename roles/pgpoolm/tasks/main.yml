@@ -1,3 +1,6 @@
+- name: clean
+  shell: rm -rf /tmp/id_rsa*
+
 - name: copy shh keys 
   copy:
     src: /tmp/{{ item }}
@@ -9,20 +12,23 @@
     - "id_rsa_pgsql_192.168.33.101"
     - "id_rsa_root_192.168.33.101"
     - "id_rsa_pgsql_192.168.33.100"
-    - "id_rsa_root_192.168.33.100"    
+    - "id_rsa_root_192.168.33.100" 
+  register: newkeys   
 
 - name: add key for root
-  shell: cat /tmp/{{ item }} >> /root/.ssh/authorized_keys 
+  shell: cat $(ls /tmp/{{ item }}) >> /root/.ssh/authorized_keys 
   with_items:
     - "id_rsa_pgsql_192.168.33.101"
     - "id_rsa_root_192.168.33.101"
     - "id_rsa_pgsql_192.168.33.100"
     - "id_rsa_root_192.168.33.100" 
+  when: newkeys.changed
 
 - name: add key for root
-  shell: cat /tmp/{{ item }} >> /var/lib/pgsql/.ssh/authorized_keys 
+  shell: cat $(ls /tmp/{{ item }}) >> /var/lib/pgsql/.ssh/authorized_keys 
   with_items:
     - "id_rsa_pgsql_192.168.33.101"
     - "id_rsa_root_192.168.33.101"
     - "id_rsa_pgsql_192.168.33.100"
-    - "id_rsa_root_192.168.33.100"
+    - "id_rsa_root_192.168.33.100" 
+  when: newkeys.changed
